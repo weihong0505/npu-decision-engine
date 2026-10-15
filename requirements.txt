@@ -1,0 +1,38 @@
+# npu-decision-engine 依赖
+#
+# 版本号 = 2026-10-15 在本机（Core Ultra 9 275HX + Intel AI Boost，Python 3.14.6）实测通过的版本。
+# 安装：python -m pip install -r requirements.txt
+#
+# 说明：原项目把依赖散在 open-jev-typed-decision-engine/requirements.txt 里，
+# 且只覆盖引擎侧；NPU 基准用到的 openvino / openvino-genai 没被记录。这里合并为一份。
+
+# --- 引擎：JEV-lite 训练与评估（engine/01_ceiling.py … 07_ensemble.py）---
+torch==2.11.0                # 本机为 2.11.0+cu128（CUDA 12.8 轮子）
+transformers==4.57.6         # ModernBERT 支持
+datasets==5.0.1
+scikit-learn==1.9.0          # 01_ceiling.py 的冻结编码器基线
+matplotlib==3.11.1           # plots.py
+numpy==2.5.1
+
+# --- ONNX 导出与数值校验 ---
+onnx==1.23.0
+onnxruntime==1.30.0          # 06_export_onnx.py 的 parity check
+onnxscript==0.7.2            # torch>=2.6 的 torch.onnx.export 需要
+
+# --- 设备基准（NPU / iGPU / CPU）---
+openvino==2026.4.0
+openvino-genai==2026.4.0.0   # src/bench/bench_llm.py
+openvino-tokenizers==2026.4.0.0
+optimum-intel==1.27.0
+huggingface_hub==0.36.2      # src/fetch/*.py 的模型下载
+
+# --- 数据读取 ---
+pandas==3.0.5
+pyarrow==25.0.1              # typed-decisions 是 parquet
+
+# --- 服务（可选，engine/05_serve.py 的 HTTP /decide）---
+fastapi==0.141.1
+uvicorn==0.52.4
+
+# --- 测试 ---
+pytest==9.1.1

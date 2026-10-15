@@ -1,0 +1,37 @@
+{
+  "onnx": "G:\\npu-experiment\\jevlite.onnx",
+  "seq": 768,
+  "labels": 18,
+  "variants": [
+    {
+      "label": "NPU 默认",
+      "device": "NPU",
+      "config": {},
+      "error": "Exception from src\\inference\\src\\cpp\\core.cpp:120: Exception from src\\inference\\src\\dev\\plugin.cpp:54: Exception from src\\plugins\\intel_npu\\src\\plugin\\src\\plugin.cpp:552: Exception from src\\plugins\\intel_npu\\src\\compiler_adapter\\src\\ze_graph_ext_wrap"
+    },
+    {
+      "label": "NPU TURBO",
+      "device": "NPU",
+      "config": {
+        "NPU_TURBO": "YES"
+      },
+      "error": "Exception from src\\inference\\src\\cpp\\core.cpp:120: Exception from src\\inference\\src\\dev\\plugin.cpp:54: Exception from src\\plugins\\intel_npu\\src\\plugin\\src\\plugin.cpp:552: Exception from src\\plugins\\intel_npu\\src\\compiler_adapter\\src\\ze_graph_ext_wrap"
+    },
+    {
+      "label": "CPU",
+      "device": "CPU",
+      "config": {},
+      "compile_s": 0.96,
+      "p50_ms": 568.433,
+      "min_ms": 547.914,
+      "mean_ms": 569.568,
+      "max_abs_err": 2.816319465637207e-06
+    },
+    {
+      "label": "iGPU (GPU.0)",
+      "device": "GPU.0",
+      "config": {},
+      "error": "Exception from src\\inference\\src\\cpp\\core.cpp:120: Exception from src\\inference\\src\\dev\\plugin.cpp:54: Check 'false' failed at src\\plugins\\intel_gpu\\src\\plugin\\program_builder.cpp:168: [GPU] ProgramBuilder build failed! Check 'correct_layout_selected"
+    }
+  ]
+}

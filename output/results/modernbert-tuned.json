@@ -1,0 +1,72 @@
+{
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "seq_len": 128,
+  "repeat": 30,
+  "variants": [
+    {
+      "label": "NPU 默认",
+      "device": "NPU",
+      "config": {},
+      "compile_s": 2.19,
+      "p50_ms": 42.97,
+      "min_ms": 40.84,
+      "mean_ms": 43.35,
+      "vs_base_pct": 0.0
+    },
+    {
+      "label": "NPU TURBO",
+      "device": "NPU",
+      "config": {
+        "NPU_TURBO": "YES"
+      },
+      "compile_s": 35.59,
+      "p50_ms": 37.46,
+      "min_ms": 35.89,
+      "mean_ms": 37.92,
+      "vs_base_pct": 14.7
+    },
+    {
+      "label": "NPU TURBO+CACHE",
+      "device": "NPU",
+      "config": {
+        "NPU_TURBO": "YES",
+        "CACHE_DIR": "G:\\npu-experiment\\npu-cache"
+      },
+      "compile_s": 34.81,
+      "p50_ms": 37.82,
+      "min_ms": 35.47,
+      "mean_ms": 38.18,
+      "vs_base_pct": 13.6
+    },
+    {
+      "label": "CPU",
+      "device": "CPU",
+      "config": {},
+      "compile_s": 1.58,
+      "p50_ms": 65.69,
+      "min_ms": 60.42,
+      "mean_ms": 65.53,
+      "vs_base_pct": -34.6
+    },
+    {
+      "label": "iGPU (GPU.0)",
+      "device": "GPU.0",
+      "config": {},
+      "compile_s": 2.99,
+      "p50_ms": 46.51,
+      "min_ms": 39.88,
+      "mean_ms": 46.59,
+      "vs_base_pct": -7.6
+    },
+    {
+      "label": "dGPU (GPU.1)",
+      "device": "GPU.1",
+      "config": {},
+      "compile_s": 4.06,
+      "p50_ms": 1481.86,
+      "min_ms": 1003.52,
+      "mean_ms": 1461.35,
+      "vs_base_pct": -97.1
+    }
+  ]
+}

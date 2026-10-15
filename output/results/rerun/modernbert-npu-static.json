@@ -1,0 +1,35 @@
+{
+  "onnx": "models/ModernBERT-base/onnx/model_q4.onnx",
+  "seq_len": 128,
+  "repeat": 20,
+  "devices": {
+    "NPU": {
+      "compile_s": 1.39,
+      "p50_ms": 40.55,
+      "mean_ms": 40.51,
+      "min_ms": 37.4,
+      "max_ms": 43.74,
+      "runs": 20
+    },
+    "CPU": {
+      "compile_s": 1.28,
+      "p50_ms": 61.84,
+      "mean_ms": 61.66,
+      "min_ms": 56.98,
+      "max_ms": 66.11,
+      "runs": 20
+    },
+    "GPU.0": {
+      "compile_s": 4.11,
+      "p50_ms": 54.68,
+      "mean_ms": 55.11,
+      "min_ms": 44.74,
+      "max_ms": 71.67,
+      "runs": 20
+    }
+  },
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "generated_by": "src/bench/bench_encoder.py",
+  "generated_at": "2026-10-15T12:10:56+08:00",
+  "host": "<host> / Windows 11 / py3.14.6"
+}

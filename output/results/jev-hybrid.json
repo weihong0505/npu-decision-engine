@@ -1,0 +1,32 @@
+{
+  "head_params": 768,
+  "seq": 768,
+  "labels": 18,
+  "runs": [
+    {
+      "label": "混合: NPU 编码器+CPU head",
+      "device": "NPU",
+      "encoder_ms": 1616.37,
+      "end_to_end_ms": 1616.65,
+      "max_abs_err": 0.6809471845626831
+    },
+    {
+      "label": "对照: CPU 编码器+CPU head",
+      "device": "CPU",
+      "encoder_ms": 552.07,
+      "end_to_end_ms": 552.3,
+      "max_abs_err": 7.3909759521484375e-06
+    }
+  ],
+  "reference": {
+    "cpu_full_model_ms": 568.4,
+    "npu_full_model_ms": 1624.8
+  },
+  "best": {
+    "label": "对照: CPU 编码器+CPU head",
+    "device": "CPU",
+    "encoder_ms": 552.07,
+    "end_to_end_ms": 552.3,
+    "max_abs_err": 7.3909759521484375e-06
+  }
+}

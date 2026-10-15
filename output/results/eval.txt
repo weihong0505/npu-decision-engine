@@ -1,0 +1,52 @@
+# 原始命令（由 PowerShell 包装中提取）: & python 04_eval.py --ckpt "G:\npu-experiment\jevlite.pt" > "G:\npu-e ...
+The new embeddings will be initialized from a multivariate normal distribution that has old embeddings' mean and co
+variance. As described in this article: https://nlp.stanford.edu/~johnhew/vocab-expansion.html. To disable this, us
+e `mean_resizing=False`
+Using the latest cached version of the dataset since LocalLLaMA/typed-decisions couldn't be found on the Hugging Fa
+ce Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'all' at C:\Users\<user>\.cache\huggingface\datasets\LocalLLaMA___typed
+-decisions\all\0.0.0\ea9306458d6e9563628369a3d1e72e362fb381d2 (last modified on Tue Sep 22 02:21:58 2026).
+
+=== uncalibrated ===
+  accuracy   0.6490   (1298/2000 decisions)
+  ECE        0.0769   (top-1 confidence vs correctness - comparable to published Jev)
+  ECE-dist   0.0309   (predicted vs consensus distribution)
+  Brier      0.0389
+  NLL        0.2859
+  TVD        0.2370   (distance from the consensus distribution)
+  per type:
+    noul     acc 0.7550   ECE 0.0629   n=600
+    choice   acc 0.6200   ECE 0.0983   n=600
+    score    acc 0.5913   ECE 0.0894   n=800
+
+=== calibrated (per-type temperature) ===
+  accuracy   0.6490   (1298/2000 decisions)
+  ECE        0.0769   (top-1 confidence vs correctness - comparable to published Jev)
+  ECE-dist   0.0309   (predicted vs consensus distribution)
+  Brier      0.0389
+  NLL        0.2859
+  TVD        0.2370   (distance from the consensus distribution)
+  per type:
+    noul     acc 0.7550   ECE 0.0629   n=600
+    choice   acc 0.6200   ECE 0.0983   n=600
+    score    acc 0.5913   ECE 0.0894   n=800
+
+=== vs Jev 1.13.0 ===
+  JevLite  0.6490        Jev  0.7270   ->  behind by 0.0780
+  JevLite ECE 0.0769    Jev ECE 0.1440 (reported)   ->  AHEAD
+
+  13.57s for 400 cases / 2000 decisions  ->  33.9 ms/case on cuda, no network
+  Jev API p50 measured from Europe: 239 ms/call
+
+=== confidence -> coverage (can you autoroute?) ===
+   threshold   coverage   accuracy
+        0.50      65.5%     0.7315
+        0.60      37.1%     0.8022
+        0.70      19.1%     0.8460
+        0.80      11.3%     0.8899
+        0.90       5.6%     0.9027
+
+  Read the last column: if accuracy climbs sharply with the threshold,
+  the confidence is real and you can route the top band automatically.
+
+wrote results.json  ->  python plots.py --show

@@ -1,0 +1,64 @@
+python.exe : W0922 12:39:52.019000 65168 site-packages\torch\utils\flop_counter.py:29] triton not found; flop count
+ing will not work for triton kernels
+At line:4 char:1
++ & python 07_ensemble.py --ckpt "G:\npu-experiment\jevlite.pt" > "G:\n ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (W0922 12:39:52.... triton kernels:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+The new embeddings will be initialized from a multivariate normal distribution that has old embeddings' mean and co
+variance. As described in this article: https://nlp.stanford.edu/~johnhew/vocab-expansion.html. To disable this, us
+e `mean_resizing=False`
+Using the latest cached version of the dataset since LocalLLaMA/typed-decisions couldn't be found on the Hugging Fa
+ce Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'all' at C:\Users\<user>\.cache\huggingface\datasets\LocalLLaMA___typed
+-decisions\all\0.0.0\ea9306458d6e9563628369a3d1e72e362fb381d2 (last modified on Tue Sep 22 02:21:58 2026).
+Using the latest cached version of the dataset since LocalLLaMA/typed-decisions couldn't be found on the Hugging Fa
+ce Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'all' at C:\Users\<user>\.cache\huggingface\datasets\LocalLLaMA___typed
+-decisions\all\0.0.0\ea9306458d6e9563628369a3d1e72e362fb381d2 (last modified on Tue Sep 22 02:21:58 2026).
+train 1016 | val 184 | test 400
+
+embedding states with the frozen encoder...
+scoring the neural model...
+
+choosing the blend weight on validation:
+      w   accuracy      ECE   (w=1 is model only, w=0 probe only)
+   0.00     0.6696   0.0713
+   0.10     0.6761   0.0770
+   0.20     0.6978   0.1115
+   0.30     0.7000   0.1236
+   0.40     0.7043   0.1371
+   0.50     0.7130   0.1516
+   0.60     0.7054   0.1471
+   0.70     0.7076   0.1494
+   0.80     0.7011   0.1420
+   0.90     0.6870   0.1273
+   1.00     0.6685   0.1027
+
+  best on validation: w=0.50 at 0.7130
+  sharpening: T=0.50 takes validation ECE 0.1516 -> 0.0383  (T < 1 means the blend was underconfident)
+
+=== test split (400 cases / 2000 decisions) ===
+                          accuracy      ECE
+  model only                0.6470   0.0739
+  probe only                0.6695   0.0384
+  ensemble w=0.50           0.7005   0.1262
+    + sharpened T=0.50      0.7005   0.0288
+  TypeSafe Jev 1.13.0       0.7270   0.1440
+
+  ensemble vs Jev: behind by 0.0265
+  per type:
+    noul     acc 0.8183   ECE 0.0421   n=600
+    choice   acc 0.6650   ECE 0.0674   n=600
+    score    acc 0.6388   ECE 0.0431   n=800
+
+=== confidence -> coverage ===
+   threshold   coverage   accuracy
+        0.50      89.5%     0.7334
+        0.60      70.8%     0.7853
+        0.70      53.4%     0.8294
+        0.80      36.6%     0.8906
+        0.90      18.5%     0.9541
+
+wrote ensemble.json  ->  python plots.py --outdir plots

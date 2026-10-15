@@ -1,0 +1,94 @@
+[
+  {
+    "label": "HF model_q4 (干净+INT4)",
+    "L": 768,
+    "ops": 3182,
+    "isnan_fixed": 0,
+    "result": {
+      "NPU": {
+        "compile_s": 37.2,
+        "p50_ms": 255.01
+      },
+      "CPU": {
+        "compile_s": 1.5,
+        "p50_ms": 378.71
+      }
+    }
+  },
+  {
+    "label": "HF model_q4 (干净+INT4)",
+    "L": 128,
+    "ops": 3182,
+    "isnan_fixed": 0,
+    "result": {
+      "NPU": {
+        "compile_s": 33.8,
+        "p50_ms": 37.89
+      },
+      "CPU": {
+        "compile_s": 1.5,
+        "p50_ms": 60.78
+      }
+    }
+  },
+  {
+    "label": "我的导出 (dynamo fp32)",
+    "L": 768,
+    "ops": 1910,
+    "isnan_fixed": 22,
+    "result": {
+      "NPU": {
+        "compile_s": 27.9,
+        "p50_ms": 1613.59
+      },
+      "CPU": {
+        "compile_s": 1.5,
+        "p50_ms": 558.32
+      }
+    }
+  },
+  {
+    "label": "我的导出 (dynamo fp32)",
+    "L": 128,
+    "ops": 1719,
+    "isnan_fixed": 22,
+    "result": {
+      "NPU": {
+        "error": "Exception from src\\inference\\src\\cpp\\infer_request.cpp:224: Check 'is_dynamic || port_partial_shape == tensor_shape' failed at src\\plugins\\intel_npu\\s"
+      },
+      "CPU": {
+        "error": "Exception from src\\inference\\src\\cpp\\infer_request.cpp:224: Check 'is_dynamic || port.get_shape() == tensor->get_shape()' failed at src\\plugins\\intel_"
+      }
+    }
+  },
+  {
+    "label": "我的导出 INT8 量化",
+    "L": 768,
+    "ops": 5964,
+    "isnan_fixed": 22,
+    "result": {
+      "NPU": {
+        "compile_s": 119.1,
+        "p50_ms": 3374.63
+      },
+      "CPU": {
+        "compile_s": 3.7,
+        "p50_ms": 645.79
+      }
+    }
+  },
+  {
+    "label": "我的导出 INT8 量化",
+    "L": 128,
+    "ops": 5245,
+    "isnan_fixed": 22,
+    "result": {
+      "NPU": {
+        "error": "Exception from src\\inference\\src\\cpp\\infer_request.cpp:224: Check 'is_dynamic || port_partial_shape == tensor_shape' failed at src\\plugins\\intel_npu\\s"
+      },
+      "CPU": {
+        "error": "Exception from src\\inference\\src\\cpp\\infer_request.cpp:224: Check 'is_dynamic || port.get_shape() == tensor->get_shape()' failed at src\\plugins\\intel_"
+      }
+    }
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "replaced": 22,
+  "results": [
+    {
+      "label": "NPU 默认",
+      "device": "NPU",
+      "compile_s": 28.27,
+      "p50_ms": 1624.78,
+      "min_ms": 1608.626,
+      "max_abs_err_vs_cpu": 0.8120808601379395
+    },
+    {
+      "label": "NPU TURBO",
+      "device": "NPU",
+      "compile_s": 28.52,
+      "p50_ms": 1628.974,
+      "min_ms": 1614.2,
+      "max_abs_err_vs_cpu": 0.8120808601379395
+    },
+    {
+      "label": "iGPU",
+      "device": "GPU.0",
+      "error": "Exception from src\\inference\\src\\cpp\\core.cpp:120: Exception from src\\inference\\src\\dev\\plugin.cpp:54: Check 'false' failed at src\\plugins\\intel_gpu\\src\\plugin\\program_builder.cpp:168: [GPU] ProgramBuilder build failed! Check 'correct_layout_selected' failed at src\\plugins\\intel_gpu\\src\\graph\\graph_optimizer\\add_required_reorders.cpp:345: [GPU] No layout format available for gathernd:node_GatherND"
+    }
+  ]
+}

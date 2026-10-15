@@ -1,0 +1,127 @@
+{
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "backend": {
+    "kind": "openvino_genai",
+    "reason": "openvino_genai 可用，走 LLMPipeline（首选路径，与模型目录的 OV 导出格式匹配）。",
+    "model_path": "models/Qwen2.5-1.5B-Instruct-int4-ov"
+  },
+  "model": "models/Qwen2.5-1.5B-Instruct-int4-ov",
+  "prompt": "用一句话解释什么是复利。",
+  "max_new": 24,
+  "host": {
+    "CPU": "Intel(R) Core(TM) Ultra 9 275HX",
+    "GPU.0": "Intel(R) Graphics (iGPU)",
+    "GPU.1": "NVIDIA GeForce RTX 5060 Laptop GPU (dGPU)",
+    "NPU": "Intel(R) AI Boost"
+  },
+  "device_names": {
+    "CPU": "Intel(R) Core(TM) Ultra 9 275HX",
+    "GPU.0": "Intel(R) Graphics (iGPU)",
+    "GPU.1": "NVIDIA GeForce RTX 5060 Laptop GPU (dGPU)",
+    "NPU": "Intel(R) AI Boost"
+  },
+  "generated_by": "src/bench/bench_llm.py",
+  "generated_at": "2026-10-15T12:03:52+0800",
+  "host_python": "3.14.6",
+  "note": "首轮生成作 warmup 丢弃，不计入 runs（latency 模式除外，repeat 全额计入）。",
+  "repeat": 5,
+  "devices": {
+    "CPU": {
+      "load_s": 1.72,
+      "short_p50_ms": 853.9,
+      "mean_ms": 1106.1,
+      "min_ms": 806.1,
+      "max_ms": 2191.6,
+      "mean_tokens": 24.0,
+      "tok_s": 21.7,
+      "runs_ms": [
+        2191.6,
+        868.0,
+        811.1,
+        806.1,
+        853.9
+      ],
+      "runs_tokens": [
+        24,
+        24,
+        24,
+        24,
+        24
+      ],
+      "text": "复利是指利息不仅用于支付本金的利息，还计算出新的利息部分，使得投资或贷款的收益"
+    },
+    "GPU.0": {
+      "load_s": 5.34,
+      "short_p50_ms": 1175.8,
+      "mean_ms": 1180.5,
+      "min_ms": 1133.8,
+      "max_ms": 1227.6,
+      "mean_tokens": 24.0,
+      "tok_s": 20.3,
+      "runs_ms": [
+        1225.3,
+        1227.6,
+        1139.8,
+        1175.8,
+        1133.8
+      ],
+      "runs_tokens": [
+        24,
+        24,
+        24,
+        24,
+        24
+      ],
+      "text": "复利是指利息不仅计算在本金上，也计算在已包含的利息中，使得最终总收益比"
+    },
+    "GPU.1": {
+      "load_s": 8.98,
+      "short_p50_ms": 3115.8,
+      "mean_ms": 3053.2,
+      "min_ms": 2703.7,
+      "max_ms": 3167.5,
+      "mean_tokens": 24.0,
+      "tok_s": 7.9,
+      "runs_ms": [
+        2703.7,
+        3167.4,
+        3111.5,
+        3115.8,
+        3167.5
+      ],
+      "runs_tokens": [
+        24,
+        24,
+        24,
+        24,
+        24
+      ],
+      "text": "复利是资金在计算利息时，不仅使用本金，还加上之前所有利息的累积结果。简单来说"
+    },
+    "NPU": {
+      "load_s": 3.38,
+      "short_p50_ms": 4207.3,
+      "mean_ms": 4267.0,
+      "min_ms": 4167.8,
+      "max_ms": 4550.5,
+      "mean_tokens": 24.0,
+      "tok_s": 5.6,
+      "runs_ms": [
+        4550.5,
+        4188.7,
+        4220.6,
+        4167.8,
+        4207.3
+      ],
+      "runs_tokens": [
+        24,
+        24,
+        24,
+        24,
+        24
+      ],
+      "text": "复利是资金在计算利息时，不仅使用本金，还加上之前所有时间产生的利息。简单来说，"
+    }
+  },
+  "mode": "latency"
+}

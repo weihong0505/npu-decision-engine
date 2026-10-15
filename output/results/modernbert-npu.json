@@ -1,0 +1,27 @@
+{
+  "onnx": "G:\\npu-experiment\\ModernBERT-base\\onnx\\model_q4.onnx",
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "maxlen": 61,
+  "repeat": 20,
+  "devices": {
+    "NPU": {
+      "error": "Exception from src\\inference\\src\\cpp\\core.cpp:120: Exception from src\\inference\\src\\dev\\plugin.cpp:54: Exception from src\\plugins\\intel_npu\\src\\plugin\\src\\plugin.cpp:552: Exception from src\\plugins\\intel_npu\\src\\compiler_adapter\\src\\ze_graph_ext_wrap"
+    },
+    "CPU": {
+      "compile_s": 1.02,
+      "p50_ms": 37.24,
+      "mean_ms": 37.48,
+      "min_ms": 34.29,
+      "max_ms": 42.35,
+      "runs": 60
+    },
+    "GPU.0": {
+      "compile_s": 11.7,
+      "p50_ms": 34.05,
+      "mean_ms": 34.81,
+      "min_ms": 28.01,
+      "max_ms": 41.88,
+      "runs": 60
+    }
+  }
+}

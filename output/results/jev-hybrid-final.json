@@ -1,0 +1,45 @@
+{
+  "ckpt_val_acc": 0.6739130434782609,
+  "runs": [
+    {
+      "label": "混合: NPU编码器 + CPU head",
+      "device": "NPU",
+      "compile_s": 18.2,
+      "encoder_ms": 189.01,
+      "head_ms": 0.199,
+      "end_to_end_ms": 189.18,
+      "max_abs_err": 0.02376413345336914
+    },
+    {
+      "label": "对照: CPU编码器 + CPU head",
+      "device": "CPU",
+      "compile_s": 0.9,
+      "encoder_ms": 420.36,
+      "head_ms": 0.17,
+      "end_to_end_ms": 420.53,
+      "max_abs_err": 3.0994415283203125e-06
+    },
+    {
+      "label": "对照: iGPU编码器 + CPU head",
+      "device": "GPU.0",
+      "compile_s": 4.2,
+      "encoder_ms": 239.9,
+      "head_ms": 0.26,
+      "end_to_end_ms": 240.08,
+      "max_abs_err": 0.07773637771606445
+    }
+  ],
+  "reference": {
+    "cpu_full_model_ms": 568.4,
+    "npu_full_model_ms": 1624.8
+  },
+  "best": {
+    "label": "混合: NPU编码器 + CPU head",
+    "device": "NPU",
+    "compile_s": 18.2,
+    "encoder_ms": 189.01,
+    "head_ms": 0.199,
+    "end_to_end_ms": 189.18,
+    "max_abs_err": 0.02376413345336914
+  }
+}

@@ -1,0 +1,28 @@
+# 原始命令（由 PowerShell 包装中提取）: & python 03_calibrate.py --ckpt "G:\npu-experiment\jevlite.pt" > "G:\ ...
+The new embeddings will be initialized from a multivariate normal distribution that has old embeddings' mean and co
+variance. As described in this article: https://nlp.stanford.edu/~johnhew/vocab-expansion.html. To disable this, us
+e `mean_resizing=False`
+Using the latest cached version of the dataset since LocalLLaMA/typed-decisions couldn't be found on the Hugging Fa
+ce Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'all' at C:\Users\<user>\.cache\huggingface\datasets\LocalLLaMA___typed
+-decisions\all\0.0.0\ea9306458d6e9563628369a3d1e72e362fb381d2 (last modified on Tue Sep 22 02:21:58 2026).
+fitting on 184 validation cases
+
+  before       ECE 0.1082   ECE-dist 0.0235   Brier 0.0344   NLL 0.2813
+      noul     ECE 0.0685   mean conf 0.685   acc 0.738
+      choice   ECE 0.1568   mean conf 0.542   acc 0.693
+      score    ECE 0.1250   mean conf 0.510   acc 0.611
+
+  after        ECE 0.1424   ECE-dist 0.0058   Brier 0.0334   NLL 0.2790
+      noul     ECE 0.0876   mean conf 0.656   acc 0.738
+      choice   ECE 0.1948   mean conf 0.503   acc 0.693
+      score    ECE 0.1580   mean conf 0.460   acc 0.611
+
+  temperature scaling did not help (0.1082 -> 0.1424) - keeping T=1.0.
+  That is the expected outcome when the loss already trains on the
+  consensus distribution; it means your calibration came for free.
+
+  fitted temperatures:  noul=1.000  choice=1.000  score=1.000
+  (T > 1 means the model was overconfident on that type, T < 1 under)
+
+saved -> G:\npu-experiment\jevlite.pt

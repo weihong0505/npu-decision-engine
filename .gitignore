@@ -1,0 +1,29 @@
+# 注意：gitignore 不支持行尾注释！
+# `backup/   # 说明` 会被当成包含空格的完整模式，等于该条规则失效
+# —— 2026-10-15 整理时这里踩过一次，差点把 16 GB 大件提交进仓库。
+# 所以本文件的注释一律独立成行。
+
+# --- 大件：可由 fetch/export 脚本重新生成，不入库 ---
+# 用 "目录/*" 而不是 "目录/"，否则 git 不会进入该目录，
+# 连里面的 README.md 也一起被排除（git 无法重新包含被排除目录下的文件）。
+models/*
+!models/README.md
+data/*
+!data/README.md
+cache/
+output/onnx/*
+!output/onnx/README.md
+backup/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# --- 编辑器 / 系统 ---
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini

@@ -1,0 +1,100 @@
+{
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "available": [
+    "CPU",
+    "GPU.0",
+    "GPU.1",
+    "NPU"
+  ],
+  "model": "G:\\npu-experiment\\Qwen2.5-1.5B-Instruct-int4-ov",
+  "prompt": "用一句话解释什么是复利。",
+  "max_new": 128,
+  "devices": {
+    "NPU": {
+      "load_s": 2.54,
+      "warmup_tokens": 34,
+      "runs": [
+        {
+          "gen_s": 4.487,
+          "tokens": 28,
+          "tok_s": 6.24
+        },
+        {
+          "gen_s": 4.73,
+          "tokens": 31,
+          "tok_s": 6.55
+        }
+      ],
+      "text": "复利是利息不仅在本金上产生利息，还计算在之前产生的利息上，使得投资或贷款的收益或债务负担随着时间增长。",
+      "tok_s": 6.55,
+      "gen_s": 4.73,
+      "tokens": 31
+    },
+    "GPU.0": {
+      "load_s": 4.79,
+      "warmup_tokens": 23,
+      "runs": [
+        {
+          "gen_s": 0.899,
+          "tokens": 24,
+          "tok_s": 26.7
+        },
+        {
+          "gen_s": 0.926,
+          "tokens": 24,
+          "tok_s": 25.9
+        }
+      ],
+      "text": "复利是利息基于先前积累的利息计算的，使得投资或债务的总回报或成本随着时间增长。",
+      "tok_s": 25.9,
+      "gen_s": 0.926,
+      "tokens": 24
+    },
+    "GPU.1": {
+      "load_s": 8.05,
+      "warmup_tokens": 38,
+      "runs": [
+        {
+          "gen_s": 5.139,
+          "tokens": 38,
+          "tok_s": 7.39
+        },
+        {
+          "gen_s": 4.88,
+          "tokens": 38,
+          "tok_s": 7.79
+        }
+      ],
+      "text": "复利是指在计算利息时，不仅计算本金的利息，还计算之前所有利息的利息，使得投资或贷款的收益或债务负担随着时间的推移而增加。",
+      "tok_s": 7.79,
+      "gen_s": 4.88,
+      "tokens": 38
+    },
+    "CPU": {
+      "load_s": 1.94,
+      "warmup_tokens": 21,
+      "runs": [
+        {
+          "gen_s": 0.804,
+          "tokens": 21,
+          "tok_s": 26.13
+        },
+        {
+          "gen_s": 0.746,
+          "tokens": 21,
+          "tok_s": 28.14
+        }
+      ],
+      "text": "复利是通过利息的方式，使本金和利息产生新的利息，从而加速财富增长的过程。",
+      "tok_s": 28.14,
+      "gen_s": 0.746,
+      "tokens": 21
+    }
+  },
+  "device_names": {
+    "CPU": "Intel(R) Core(TM) Ultra 9 275HX",
+    "GPU.0": "Intel(R) Graphics (iGPU)",
+    "GPU.1": "NVIDIA GeForce RTX 5060 Laptop GPU (dGPU)",
+    "NPU": "Intel(R) AI Boost"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "backend": {
+    "kind": "openvino_genai",
+    "reason": "openvino_genai 可用，走 LLMPipeline（首选路径，与模型目录的 OV 导出格式匹配）。",
+    "model_path": "models/Qwen2.5-1.5B-Instruct-int4-ov"
+  },
+  "model": "models/Qwen2.5-1.5B-Instruct-int4-ov",
+  "prompt": "用一句话解释什么是复利。",
+  "max_new": 128,
+  "host": {
+    "CPU": "Intel(R) Core(TM) Ultra 9 275HX",
+    "GPU.0": "Intel(R) Graphics (iGPU)",
+    "GPU.1": "NVIDIA GeForce RTX 5060 Laptop GPU (dGPU)",
+    "NPU": "Intel(R) AI Boost"
+  },
+  "device_names": {
+    "CPU": "Intel(R) Core(TM) Ultra 9 275HX",
+    "GPU.0": "Intel(R) Graphics (iGPU)",
+    "GPU.1": "NVIDIA GeForce RTX 5060 Laptop GPU (dGPU)",
+    "NPU": "Intel(R) AI Boost"
+  },
+  "generated_by": "src/bench/bench_llm.py",
+  "generated_at": "2026-10-15T11:56:42+0800",
+  "host_python": "3.14.6",
+  "note": "首轮生成作 warmup 丢弃，不计入 runs（latency 模式除外，repeat 全额计入）。",
+  "available": [
+    "CPU",
+    "GPU.0",
+    "GPU.1",
+    "NPU"
+  ],
+  "devices": {
+    "CPU": {
+      "load_s": 1.73,
+      "warmup_tokens": 33,
+      "text": "复利是指利息不仅用于支付本金的利息，还计算出新的利息部分，使得投资或贷款的收益和债务增加的速度超出简单利息的情况。",
+      "runs": [
+        {
+          "gen_s": 1.206,
+          "tokens": 33,
+          "tok_s": 27.36
+        },
+        {
+          "gen_s": 1.421,
+          "tokens": 33,
+          "tok_s": 23.23
+        }
+      ],
+      "tok_s": 23.23,
+      "gen_s": 1.421,
+      "tokens": 33,
+      "mean_tok_s": 25.3,
+      "text_head": "复利是指利息不仅用于支付本金的利息，还计算出新的利息部分，使得投资或贷款的收益和债务增加的速度超出简单利息的情况。"
+    },
+    "GPU.0": {
+      "load_s": 6.9,
+      "warmup_tokens": 33,
+      "text": "复利是指利息不仅计算在本金上，也计算在已包含的利息中，使得最终总收益比单利情况下的收益更高。",
+      "runs": [
+        {
+          "gen_s": 1.641,
+          "tokens": 31,
+          "tok_s": 18.89
+        },
+        {
+          "gen_s": 1.721,
+          "tokens": 31,
+          "tok_s": 18.01
+        }
+      ],
+      "tok_s": 18.01,
+      "gen_s": 1.721,
+      "tokens": 31,
+      "mean_tok_s": 18.45,
+      "text_head": "复利是指利息不仅计算在本金上，也计算在已包含的利息中，使得最终总收益比单利情况下的收益更高。"
+    },
+    "GPU.1": {
+      "load_s": 9.38,
+      "warmup_tokens": 35,
+      "text": "复利是资金在计算利息时，不仅使用本金，还加上之前所有利息的累积结果。简单来说，就是利用以前产生的利息来产生更多的利息。",
+      "runs": [
+        {
+          "gen_s": 4.227,
+          "tokens": 35,
+          "tok_s": 8.28
+        },
+        {
+          "gen_s": 4.585,
+          "tokens": 35,
+          "tok_s": 7.63
+        }
+      ],
+      "tok_s": 7.63,
+      "gen_s": 4.585,
+      "tokens": 35,
+      "mean_tok_s": 7.96,
+      "text_head": "复利是资金在计算利息时，不仅使用本金，还加上之前所有利息的累积结果。简单来说，就是利用以前产生的利息来产生更多的利息。"
+    },
+    "NPU": {
+      "load_s": 27.28,
+      "warmup_tokens": 31,
+      "text": "复利是资金在计算利息时，不仅计息本金，也计息之前产生的利息的过程。简单来说，就是同样的金额和利率，在相同的时间内产生了更多的利息。这种“收益的收益”现象使得投资回报率大大增加。",
+      "runs": [
+        {
+          "gen_s": 5.41,
+          "tokens": 36,
+          "tok_s": 6.65
+        },
+        {
+          "gen_s": 6.731,
+          "tokens": 52,
+          "tok_s": 7.73
+        }
+      ],
+      "tok_s": 7.73,
+      "gen_s": 6.731,
+      "tokens": 52,
+      "mean_tok_s": 7.19,
+      "text_head": "复利是资金在计算利息时，不仅计息本金，也计息之前产生的利息的过程。简单来说，就是同样的金额和利率，在相同的时间内产生了更多的利息。这种“收益的收益”现象使得投资回报率大大增加。"
+    }
+  },
+  "mode": "short",
+  "repeat": 2
+}

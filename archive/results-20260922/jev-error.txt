@@ -1,0 +1,49 @@
+=== 模型算子类型统计（顶层）===
+  Constant                     520
+  Multiply                     243
+  Slice                        222
+  MatMul                       135
+  Add                          133
+  Transpose                    112
+  Concat                       94
+  Reshape                      88
+  Squeeze                      69
+  Range                        47
+  MVN                          45
+  Negative                     44
+  ShapeOf                      25
+  Select                       24
+  Softmax                      22
+  IsNaN                        22
+  Split                        22
+  Divide                       22
+  Erf                          22
+  Unsqueeze                    14
+  Broadcast                    11
+  LogicalAnd                   6
+  Parameter                    3
+  Convert                      2
+  Cos                          2
+  Sin                          2
+  Gather                       1
+  GreaterEqual                 1
+  Maximum                      1
+  GatherND                     1
+  Subtract                     1
+  Abs                          1
+  LessEqual                    1
+  GatherElements               1
+  Result                       1
+
+总算子数: 1960
+
+=== 尝试 NPU 编译，输出完整错误 ===
+Exception from src\inference\src\cpp\core.cpp:120:
+Exception from src\inference\src\dev\plugin.cpp:54:
+Exception from src\plugins\intel_npu\src\plugin\src\plugin.cpp:552:
+Exception from src\plugins\intel_npu\src\compiler_adapter\src\ze_graph_ext_wrappers.cpp:433:
+Compilation failed. Level0 pfnCreate2 result: ZE_RESULT_ERROR_INVALID_ARGUMENT, code 0x78000004 - generic error code for invalid arguments . [NOT IMPLEMENTED] Unsupported operation node_IsNaN_247 with type IsNaN and version opset10. Try to update the driver to the latest version. If the error persists, please submit a bug report in https://github.com/openvinotoolkit/openvino/issues
+
+
+
+

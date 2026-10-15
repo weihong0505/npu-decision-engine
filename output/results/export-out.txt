@@ -1,0 +1,62 @@
+# 原始命令（由 PowerShell 包装中提取）: & python 06_export_onnx.py --ckpt "G:\npu-experiment\jevlite.pt" --ou ...
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]
+Loading weights:  31%|███       | 41/134 [00:00<00:00, 397.15it/s]
+Loading weights:  60%|██████    | 81/134 [00:00<00:00, 384.30it/s]
+Loading weights:  91%|█████████ | 122/134 [00:00<00:00, 394.55it/s]
+Loading weights: 100%|██████████| 134/134 [00:00<00:00, 430.26it/s]
+[transformers] ModernBertModel LOAD REPORT from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+head.dense.weight | UNEXPECTED |  | 
+decoder.bias      | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[transformers] The new embeddings will be initialized from a multivariate normal distribution that has old embeddin
+gs' mean and covariance. As described in this article: https://nlp.stanford.edu/~johnhew/vocab-expansion.html. To d
+isable this, use `mean_resizing=False`
+Using the latest cached version of the dataset since LocalLLaMA/typed-decisions couldn't be found on the Hugging Fa
+ce Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'all' at C:\Users\<user>\.cache\huggingface\datasets\LocalLLaMA___typed
+-decisions\all\0.0.0\ea9306458d6e9563628369a3d1e72e362fb381d2 (last modified on Tue Sep 22 02:21:58 2026).
+G:\npu-experiment\open-jev-typed-decision-engine\06_export_onnx.py:50: UserWarning: Exporting a model while it is i
+n training mode. Please ensure that this is intended, as it may lead to different behavior during inference. Callin
+g model.eval() before export is recommended.
+  torch.onnx.export(
+G:\npu-experiment\open-jev-typed-decision-engine\06_export_onnx.py:50: UserWarning: # 'dynamic_axes' is not recomme
+nded when dynamo=True, and may lead to 'torch._dynamo.exc.UserError: Constraints violated.' Supply the 'dynamic_sha
+pes' argument instead if export is unsuccessful.
+  torch.onnx.export(
+W0922 02:45:58.419000 69380 site-packages\torch\onnx\_internal\exporter\_registration.py:110] torchvision is not in
+stalled. Skipping torchvision::nms
+W0922 02:45:58.420000 69380 site-packages\torch\onnx\_internal\exporter\_registration.py:110] torchvision is not in
+stalled. Skipping torchvision::roi_align
+W0922 02:45:58.421000 69380 site-packages\torch\onnx\_internal\exporter\_registration.py:110] torchvision is not in
+stalled. Skipping torchvision::roi_pool
+W0922 02:45:58.421000 69380 site-packages\torch\onnx\_internal\exporter\_registration.py:110] torchvision is not in
+stalled. Skipping torchvision::deform_conv2d
+W0922 02:45:58.489000 69380 site-packages\torch\utils\flop_counter.py:29] triton not found; flop counting will not 
+work for triton kernels
+D:\pyh\Lib\copyreg.py:104: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec,
+ TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+D:\pyh\Lib\site-packages\torch\onnx\_internal\exporter\_onnx_program.py:487: UserWarning: # The axis name: seq will
+ not be used, since it shares the same shape constraints with another axis: seq.
+  rename_mapping = _dynamic_shapes.create_rename_mapping(
+[torch.onnx] Obtain model graph for `ExportWrapper([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `ExportWrapper([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decompositions...
+[torch.onnx] Run decompositions... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+[torch.onnx] Optimize the ONNX graph...
+[torch.onnx] Optimize the ONNX graph... ✅
+exported -> G:\npu-experiment\jevlite.onnx (2.3 MB) + 596 MB G:\npu-experiment\jevlite.onnx.data
+  note: weights live in the sidecar. Serve BOTH files from the same
+  directory, or ORT Web will load a graph with no weights in it.
+  parity vs pytorch: max abs diff 6.32e-06 OK
+
+In the browser, load this with onnxruntime-web, tokenize with
+@huggingface/transformers, then for each question softmax its own
+label logits after dividing by its type temperature: None

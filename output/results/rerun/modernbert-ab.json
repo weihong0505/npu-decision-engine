@@ -1,0 +1,54 @@
+{
+  "onnx": "models/ModernBERT-base/onnx/model_q4.onnx",
+  "seq_len": 128,
+  "method": "paired A/B, alternating order, compiled once per config, warmup discarded",
+  "A": "NPU 默认",
+  "B": "NPU TURBO=YES",
+  "sign_convention": "paired_rel_pct = (B-A)/A*100 ; 负值 = TURBO 更快",
+  "ab_repeat": 30,
+  "compile_s": {
+    "A_default": 39.93,
+    "B_turbo": 39.39
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "A_ms": 39.34,
+      "B_ms": 38.46,
+      "ratio": 0.9776
+    },
+    {
+      "round": 2,
+      "A_ms": 38.84,
+      "B_ms": 38.61,
+      "ratio": 0.9941
+    },
+    {
+      "round": 3,
+      "A_ms": 38.75,
+      "B_ms": 40.6,
+      "ratio": 1.0477
+    },
+    {
+      "round": 4,
+      "A_ms": 43.55,
+      "B_ms": 44.48,
+      "ratio": 1.0214
+    }
+  ],
+  "A_median": 39.09,
+  "B_median": 39.605,
+  "paired_rel_pct": [
+    -2.24,
+    -0.59,
+    4.77,
+    2.14
+  ],
+  "true_gain_pct": 1.02,
+  "round_spread_pct": 7.01,
+  "verdict": "TURBO 增益在轮间波动范围内，判定为噪声",
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "generated_by": "src/bench/bench_encoder.py",
+  "generated_at": "2026-10-15T12:14:01+08:00",
+  "host": "<host> / Windows 11 / py3.14.6"
+}

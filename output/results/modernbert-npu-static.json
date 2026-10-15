@@ -1,0 +1,31 @@
+{
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "seq_len": 128,
+  "repeat": 20,
+  "devices": {
+    "NPU": {
+      "compile_s": 35.08,
+      "p50_ms": 38.39,
+      "mean_ms": 38.65,
+      "min_ms": 36.77,
+      "max_ms": 43.53,
+      "runs": 60
+    },
+    "CPU": {
+      "compile_s": 1.18,
+      "p50_ms": 60.68,
+      "mean_ms": 60.71,
+      "min_ms": 50.2,
+      "max_ms": 68.99,
+      "runs": 60
+    },
+    "GPU.0": {
+      "compile_s": 4.88,
+      "p50_ms": 47.33,
+      "mean_ms": 47.68,
+      "min_ms": 43.16,
+      "max_ms": 56.61,
+      "runs": 60
+    }
+  }
+}
