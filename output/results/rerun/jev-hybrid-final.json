@@ -1,0 +1,54 @@
+{
+  "encoder_onnx": "output/onnx/jev_encoder.onnx",
+  "seq": 768,
+  "labels": 18,
+  "repeat": 20,
+  "ckpt_val_acc": 0.6739130434782609,
+  "ckpt_max_len": 768,
+  "runs": [
+    {
+      "label": "混合: NPU编码器 + CPU head",
+      "device": "NPU",
+      "error": "子进程退出码 3221225477（0xC0000005 访问违例：OpenVINO NPU 原生层崩溃，进程级、try/except 抓不到）",
+      "stderr_tail": ""
+    },
+    {
+      "label": "混合: CPU编码器 + CPU head",
+      "device": "CPU",
+      "compile_s": 1.01,
+      "encoder_ms": 581.24,
+      "head_ms": 0.038,
+      "end_to_end_ms": 581.28,
+      "max_abs_err": 0.7242919206619263,
+      "isolated": false
+    },
+    {
+      "label": "混合: GPU.0编码器 + CPU head",
+      "device": "GPU.0",
+      "error": "Exception from src\\inference\\src\\cpp\\core.cpp:120:\nException from src\\inference\\src\\dev\\plugin.cpp:54:\nCheck 'false' failed at src\\plugins\\intel_gpu\\src\\plugin\\program_builder.cpp:168:\n[GPU] ProgramBuilder build failed!\nCheck 'correct_layout_selected' failed at src\\plugins\\intel_gpu\\src\\graph\\graph_optimizer\\add_required_reorders.cpp:345:\n[GPU] No layout format available for gathernd:node_GatherND_29, impl_type: any (format: bfyx, data_type: u8) \n{\n\tdata_type=u8;\n\tformat=bfyx;\n\tshape=[1,1,1,768]"
+    },
+    {
+      "label": "对照: CPU整图",
+      "device": "CPU",
+      "end_to_end_ms": 581.85,
+      "p50_ms": 581.85
+    }
+  ],
+  "reference": {
+    "cpu_full_model_ms": 581.85
+  },
+  "best": {
+    "label": "混合: CPU编码器 + CPU head",
+    "device": "CPU",
+    "compile_s": 1.01,
+    "encoder_ms": 581.24,
+    "head_ms": 0.038,
+    "end_to_end_ms": 581.28,
+    "max_abs_err": 0.7242919206619263,
+    "isolated": false
+  },
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "generated_by": "src/bench/bench_jev.py",
+  "generated_at": "2026-10-15T12:26:09+08:00",
+  "host": "<host> / Windows 11 / py3.14.6"
+}

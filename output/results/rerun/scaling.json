@@ -1,0 +1,43 @@
+{
+  "runs": [
+    {
+      "L": 128,
+      "npu": 40.07,
+      "cpu": 60.58,
+      "igpu": 56.42,
+      "npu_over_cpu": 0.66
+    },
+    {
+      "L": 256,
+      "npu": 63.26,
+      "cpu": 115.26,
+      "igpu": 103.38,
+      "npu_over_cpu": 0.55
+    },
+    {
+      "L": 384,
+      "npu": 102.69,
+      "cpu": 174.05,
+      "igpu": 169.82,
+      "npu_over_cpu": 0.59
+    },
+    {
+      "L": 512,
+      "npu": 143.53,
+      "cpu": 245.91,
+      "igpu": 232.29,
+      "npu_over_cpu": 0.58
+    },
+    {
+      "L": 768,
+      "npu": 252.82,
+      "cpu": 394.43,
+      "igpu": 382.55,
+      "npu_over_cpu": 0.64
+    }
+  ],
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "generated_by": "src/bench/bench_encoder.py",
+  "generated_at": "2026-10-15T12:25:03+08:00",
+  "host": "<host> / Windows 11 / py3.14.6"
+}

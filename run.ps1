@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     npu-decision-engine 的统一入口。
 
@@ -34,37 +34,14 @@ function Write-Step($text) { Write-Host "`n=== $text ===" -ForegroundColor Cyan 
 function Invoke-Py { param([string[]]$PyArgs) & python @PyArgs; if ($LASTEXITCODE -ne 0) { Write-Warning "python 退出码 $LASTEXITCODE" } }
 
 function Do-Check {
-    Write-Step 'Python'
-    Invoke-Py @('-V')
+    # 自检逻辑放在 Python 里（src/tools/env_report.py）：Windows PowerShell 5.1
+    # 对 .ps1 内的 here-string 解析会失败，且 Python 版可以被 bash/CI 复用。
+    Invoke-Py @('src/tools/env_report.py')
 
-    Write-Step 'OpenVINO 与设备'
-    $code = @'
-import openvino as ov
-core = ov.Core()
-print("openvino", ov.get_version())
-print("devices ", core.available_devices)
-for d in core.available_devices:
-    print(f"  {d:<7} {core.get_property(d, 'FULL_DEVICE_NAME')}")
-'@
-    Invoke-Py @('-c', $code)
-
-    Write-Step '大件是否就位'
-    foreach ($p in @('models\ModernBERT-base\config.json',
-                     'models\ModernBERT-base\onnx\model_q4.onnx',
-                     'models\Qwen2.5-1.5B-Instruct-int4-ov',
-                     'data\typed-decisions',
-                     'output\onnx\jevlite.pt',
-                     'output\onnx\jev_encoder.onnx',
-                     'output\results')) {
-        $mark = if (Test-Path $p) { '[OK]  ' } else { '[MISS]' }
-        $color = if (Test-Path $p) { 'Green' } else { 'Yellow' }
-        Write-Host "  $mark $p" -ForegroundColor $color
-    }
-
-    Write-Step '关键计数'
+    Write-Step '测试与结果计数'
+    Write-Host ("  测试文件:     {0}" -f (Get-ChildItem 'tests' -Filter 'test_*.py' -ErrorAction SilentlyContinue).Count)
     Write-Host ("  原始结果文件: {0}" -f (Get-ChildItem 'output\results' -File -ErrorAction SilentlyContinue).Count)
     Write-Host ("  重跑结果文件: {0}" -f (Get-ChildItem $OutDir -File -ErrorAction SilentlyContinue).Count)
-    Write-Host ("  测试文件:     {0}" -f (Get-ChildItem 'tests' -Filter 'test_*.py' -ErrorAction SilentlyContinue).Count)
 }
 
 function Do-Test { Write-Step 'pytest'; Invoke-Py @('-m', 'pytest') }

@@ -1,0 +1,43 @@
+{
+  "onnx": "output/onnx/jevlite.onnx",
+  "seq": 768,
+  "labels": 18,
+  "repeat": 20,
+  "variants": [
+    {
+      "label": "NPU 默认",
+      "device": "NPU",
+      "config": {},
+      "error": "子进程退出码 3221225477（0xC0000005 访问违例：OpenVINO NPU 原生层崩溃，进程级、try/except 抓不到）",
+      "stderr_tail": "",
+      "isolated": true
+    },
+    {
+      "label": "NPU TURBO",
+      "device": "NPU",
+      "config": {
+        "NPU_TURBO": "YES"
+      },
+      "error": "子进程退出码 3221225477（0xC0000005 访问违例：OpenVINO NPU 原生层崩溃，进程级、try/except 抓不到）",
+      "stderr_tail": "",
+      "isolated": true
+    },
+    {
+      "label": "CPU",
+      "device": "CPU",
+      "config": {},
+      "max_abs_err": 0.0,
+      "compile_s": null,
+      "p50_ms": 570.85,
+      "mean_ms": 572.89,
+      "min_ms": 558.3,
+      "max_ms": 591.12,
+      "runs": 20
+    }
+  ],
+  "isolation_note": "NPU 尝试在子进程内执行；段错误会被记为子进程退出码而非中断本次基准。",
+  "openvino": "2026.4.0-22959-99c81491cc3-releases/2026/4",
+  "generated_by": "src/bench/bench_jev.py",
+  "generated_at": "2026-10-15T12:25:30+08:00",
+  "host": "<host> / Windows 11 / py3.14.6"
+}

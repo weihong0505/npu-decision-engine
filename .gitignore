@@ -27,3 +27,6 @@ venv/
 .idea/
 Thumbs.db
 desktop.ini
+
+# --- 子进程隔离探针的中间产物（.npy 隐藏状态等）---
+output/results/rerun/_probe/

@@ -82,28 +82,41 @@ def time_head(hidden, label_pos, W, b, repeat=200):
 
 
 def mode_full(core, args):
-    """整图上 NPU：预期编译失败；CPU 可跑，作为后续混合方案的对照。"""
+    """整图上 NPU：预期编译失败；CPU 可跑，作为后续混合方案的对照。
+
+    注意 NPU 部分走**子进程隔离**：本机上编译含 `IsNaN` 的整图会让 OpenVINO 原生层
+    直接段错误（0xC0000005），进程级崩溃 try/except 抓不到，会静默带走整个基准。
+    """
     model = static_full_model(core, args.seq, args.labels)
     feeds = H.feeds_for(model, args.seq)
-    cpu_out = None
+
+    cm_cpu = core.compile_model(model, "CPU")
+    cpu_out = H.infer_outputs(cm_cpu, feeds)
+    cpu_stats = H.time_infer(cm_cpu, feeds, args.repeat, args.warmup)
+
     variants = []
-    for label, config in (("NPU 默认", {}), ("NPU TURBO", {"NPU_TURBO": "YES"}), ("CPU", {})):
-        st = H.run_on(core, model, "NPU" if label.startswith("NPU") else "CPU",
-                      feeds, args.repeat, args.warmup, config)
-        rec = {"label": label, "device": "NPU" if label.startswith("NPU") else "CPU", "config": config}
+    for label, config in (("NPU 默认", {}), ("NPU TURBO", {"NPU_TURBO": "YES"})):
+        st = H.run_isolated_device(paths.JEV_ONNX, "NPU", args.seq, args.labels, config,
+                                   args.repeat, args.warmup)
+        npy = st.pop("_output_npy", None)
+        rec = {"label": label, "device": "NPU", "config": config}
         rec.update(st)
-        if label == "CPU" and "error" not in st:
-            cm = core.compile_model(model, "CPU")
-            cpu_out = H.infer_outputs(cm, feeds)
-            rec["max_abs_err"] = 0.0
-        elif cpu_out is not None and "error" not in st:
-            cm = core.compile_model(model, "NPU", config)
-            out = H.infer_outputs(cm, feeds)
-            rec["max_abs_err"] = H.max_abs_err(cpu_out, out)
+        if npy:
+            rec["max_abs_err"] = H.max_abs_err(cpu_out, [np.load(npy)])
         variants.append(rec)
-        print(f"  {label:<12} {rec.get('p50_ms', 'compile FAILED')}")
+        if "p50_ms" in rec:
+            print(f"  {label:<12} {rec['p50_ms']} ms   err={rec.get('max_abs_err')}")
+        else:
+            print(f"  {label:<12} FAILED: {rec.get('error', '')[:110]}")
+
+    cpu_rec = {"label": "CPU", "device": "CPU", "config": {}, "max_abs_err": 0.0}
+    cpu_rec.update(cpu_stats)
+    variants.append(cpu_rec)
+    print(f"  {'CPU':<12} {cpu_stats['p50_ms']} ms")
+
     payload = {"onnx": "output/onnx/jevlite.onnx", "seq": args.seq, "labels": args.labels,
-               "repeat": args.repeat, "variants": variants}
+               "repeat": args.repeat, "variants": variants,
+               "isolation_note": "NPU 尝试在子进程内执行；段错误会被记为子进程退出码而非中断本次基准。"}
     return H.write_result("jev-npu-final.json", payload, args.outdir, SCRIPT)
 
 
@@ -133,21 +146,37 @@ def mode_hybrid(core, args):
     runs = []
     for device, config in (("NPU", {}), ("CPU", {}), ("GPU.0", {})):
         try:
-            cm, cs = H.compile_model(core, enc, device, config)
-            st = H.time_infer(cm, enc_feeds, args.repeat, args.warmup)
-            hidden = np.asarray(cm.create_infer_request().infer(enc_feeds)[cm.outputs[0]])
+            if device == "NPU":
+                # 子进程隔离：本机 NPU 编译此编码器图会直接段错误（见 harness.run_isolated_device）
+                st = H.run_isolated_device(enc_path, "NPU", args.seq, None, config,
+                                           args.repeat, args.warmup)
+                npy = st.pop("_output_npy", None)
+                if "error" in st:
+                    runs.append({"label": f"混合: {device}编码器 + CPU head", "device": device,
+                                 "error": st["error"], "stderr_tail": st.get("stderr_tail", "")})
+                    print(f"  {device:<6} FAILED: {st['error'][:110]}")
+                    continue
+                hidden = np.load(npy)
+                compile_s, p50_ms = st.get("compile_s"), st["p50_ms"]
+            else:
+                cm, cs = H.compile_model(core, enc, device, config)
+                stt = H.time_infer(cm, enc_feeds, args.repeat, args.warmup)
+                hidden = np.asarray(cm.create_infer_request().infer(enc_feeds)[cm.outputs[0]])
+                compile_s, p50_ms = round(cs, 2), stt["p50_ms"]
+
             hp50, _ = time_head(hidden, full_feeds["label_pos"], W, b, args.head_repeat)
             hybrid = head_logits(hidden, full_feeds["label_pos"], W, b)
             runs.append({
                 "label": f"混合: {device}编码器 + CPU head",
                 "device": device,
-                "compile_s": round(cs, 2),
-                "encoder_ms": st["p50_ms"],
+                "compile_s": compile_s,
+                "encoder_ms": p50_ms,
                 "head_ms": hp50,
-                "end_to_end_ms": round(st["p50_ms"] + hp50, 2),
+                "end_to_end_ms": round(p50_ms + hp50, 2),
                 "max_abs_err": H.max_abs_err(ref_out, [hybrid]),
+                "isolated": device == "NPU",
             })
-            print(f"  {device:<6} encoder={st['p50_ms']} ms + head={hp50} ms "
+            print(f"  {device:<6} encoder={p50_ms} ms + head={hp50} ms "
                   f"= {runs[-1]['end_to_end_ms']} ms   err={runs[-1]['max_abs_err']:.2e}")
         except Exception as e:
             runs.append({"label": f"混合: {device}编码器 + CPU head", "device": device,
