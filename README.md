@@ -1,15 +1,24 @@
 # npu-decision-engine
 
+> **Intel NPU 到底能不能跑 LLM 推理？我用基准把答案量出来了。**
+> 一句话结论：**NPU 适合静态形状的编码器前向（比 CPU 快约 3×），不适合自回归解码（比 CPU 慢约 5.5×）。**
+
+<p>
+<img alt="tests" src="https://img.shields.io/badge/tests-23%20passed-brightgreen">
+<img alt="openvino" src="https://img.shields.io/badge/OpenVINO-2026.4.0-blue">
+<img alt="hardware" src="https://img.shields.io/badge/NPU-Intel%C2%AE%20AI%20Boost-informational">
+</p>
+
 把 **JEV-lite**（ModernBERT-150M 的 typed decision engine，一次前向回答任意类型化问题）
 和 **Qwen2.5-1.5B** 放到 Intel **NPU（Intel AI Boost）** 上，量清楚它到底值不值。
-
-一句话结论：**NPU 适合静态形状的编码器前向（比 CPU 快约 3×），不适合自回归解码（比 CPU 慢约 6×）。**
 
 > ⚠️ **当前状态（2026-10-15 复测）**：结论线 1、2 已用新基准脚本干净复现；
 > **结论线 3 的 NPU 半边失效** —— NPU 编译 JEV 那两个 fp32 图会让进程直接段错误
 > （`0xC0000005`），同机同刻 INT4 的 ModernBERT 图却正常。所以下表里 189 ms 一行是
 > **2026-09-22 的历史测量，现在跑不出来**。详见
 > [docs/02 第七节](docs/02-实验结论汇总.md#七2026-10-15-重跑对照outputresultsrerun)。
+>
+> 我把失效的那一行**原样留在表里并标注**，而不是删掉 —— 一个只会展示成功数据的基准不可信。
 
 | 任务 | 设备 | 延迟 | 结论 |
 |---|---|---|---|
@@ -19,6 +28,8 @@
 | ModernBERT 编码器（静态 L=128） | **NPU** | **40.6 ms** | 比 CPU（61.8 ms）快 1.5× |
 | ModernBERT 编码器（动态形状） | **NPU** | **编译失败** | 静态形状是 NPU 可编译的**前提** |
 | Qwen2.5-1.5B 解码（max_new=24） | **NPU** | 3305 ms / **3.6 tok/s** | 比 CPU（19.7 tok/s）慢 **5.5×** |
+
+---
 
 ## 硬件与环境
 
@@ -32,6 +43,8 @@
 | **NPU** | **Intel(R) AI Boost** | `NPU` |
 
 OpenVINO 2026.4.0 · Python 3.14.6 · torch 2.11.0+cu128
+
+---
 
 ## 三条结论线
 
@@ -47,7 +60,7 @@ OpenVINO 2026.4.0 · Python 3.14.6 · torch 2.11.0+cu128
 | **NPU** | **3305 ms** | **3.6 tok/s** |
 
 长 prompt / 128 new token 下 NPU 也只有 6.6 tok/s，CPU 是 28.1 tok/s。
-自回归解码是逐 token 的串行小算子流，NPU 的并行优势完全用不上。
+**自回归解码是逐 token 的串行小算子流，NPU 的并行优势完全用不上。**
 
 ### 2. NPU 跑编码器：需要先"驯服"形状
 
@@ -60,6 +73,7 @@ ModernBERT-base（HF 官方 INT4 导出，`model_q4.onnx`）：
 | 静态 L=768 | **253.3 ms** | 383.0 ms | 282.7 ms | 0.66 |
 
 静态化之后 NPU 在 128→768 全程领先，比值稳定在 0.55–0.66。
+**静态形状是 NPU 可编译的前提，不是优化选项。**
 
 ### 3. JEV-lite 整图：拆开才行
 
@@ -72,6 +86,8 @@ ModernBERT-base（HF 官方 INT4 导出，`model_q4.onnx`）：
 拆图依据（`engine/model.py:54-59`）：head 只是 `Linear(768,1)` 作用在
 `gather(label_pos)` 上，只有 `score.weight[1,768]` + `score.bias[1]` 两个张量，
 所以 head 留在 CPU 只花 0.2 ms，而编码器（224 MB 权重）交给 NPU。
+
+---
 
 ## 快速开始
 
@@ -93,17 +109,37 @@ python src/bench/bench_llm.py --mode latency
 ```
 
 结果写到 `output/results/rerun/`，每个 JSON 自带 `generated_by` / `generated_at` / `openvino` / `host`
-溯源字段。**`output/results/` 里的原作是 2026-09-22 的手抄证据，原样保留不覆盖**——
+**溯源字段**。`output/results/` 里的原作是 2026-09-22 的手抄证据，**原样保留不覆盖** ——
 两批数据的关系见 [docs/02-实验结论汇总.md](docs/02-实验结论汇总.md)。
 
-引擎侧（训练 / 标定 / 评估 / 集成）在 [engine/](engine/) 里，用法见其
-[README](engine/README.md)：
+引擎侧（训练 / 标定 / 评估 / 集成）在 [engine/](engine/) 里，用法见其 [README](engine/README.md)：
 
 ```powershell
 python engine/01_ceiling.py            # 先看要打败的基线
 python engine/smoke_test.py --all      # 全量数据校验，无需 GPU
 python engine/04_eval.py               # 官方测试集评估
 ```
+
+---
+
+## 这个项目里哪些是我写的
+
+诚实标注，因为一半代码不是我的：
+
+| 目录 | 性质 |
+|---|---|
+| `src/bench/` | ✅ **全新**：三类基准 + 公共设施（设备枚举 / 配对 A-B 计时 / 带溯源落盘） |
+| `src/paths.py` | ✅ **全新**：统一路径层（禁止写死盘符） |
+| `src/tools/` | ✅ **全新**：日志规范化、ONNX 权重指纹 |
+| `README.md` / `REVIEW.md` / `run.ps1` / `tests/` / `docs/` | ✅ **全新** |
+| `src/probe/`、`src/fetch/` | 🔧 2026-09 实验脚本，本次整理改路径、去 BOM、补文档字符串 |
+| `output/results/` | 📊 2026-09-22 实测产物（原样保留） |
+| `engine/` | ⬆️ **上游代码**（浅克隆，Apache-2.0），来源与 commit 见 [docs/UPSTREAM.md](docs/UPSTREAM.md) |
+
+本仓库整体沿用上游 **Apache-2.0**。`engine/` 内文件版权归上游作者，
+本项目新增部分在同样许可下提供。模型权重与数据集各自的许可以其原始发布方为准。
+
+---
 
 ## 目录
 
@@ -131,6 +167,8 @@ npu-decision-engine/
 └─ backup/                整理前的完整快照
 ```
 
+---
+
 ## 已知限制
 
 - **NPU 只接受静态形状**。这是本轮所有"NPU 失败/成功"的总开关。据 Intel 材料，
@@ -142,6 +180,8 @@ npu-decision-engine/
 - **本仓库不含大件**：模型权重、数据集、ONNX 图、NPU 缓存都被 `.gitignore` 排除，
   新克隆后需按 [docs/04-复现手册.md](docs/04-复现手册.md) 重新获取。
 - **`engine/` 是上游代码**，不是本项目原创；来源与 commit 见 [docs/UPSTREAM.md](docs/UPSTREAM.md)。
+
+---
 
 ## 文档索引
 
