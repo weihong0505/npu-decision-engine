@@ -147,6 +147,10 @@ python engine/04_eval.py               # 官方测试集评估
 | `output/results/` | 📊 2026-09-22 实测产物（原样保留） |
 | `engine/` | ⬆️ **上游代码**（浅克隆，Apache-2.0），来源与 commit 见 [docs/UPSTREAM.md](docs/UPSTREAM.md) |
 
+---
+
+## 许可与归属
+
 本仓库整体以 **Apache-2.0** 释出：
 
 - 根目录 [`LICENSE`](LICENSE) 是 Apache-2.0 全文，[`NOTICE`](NOTICE) 写清三类归属。
