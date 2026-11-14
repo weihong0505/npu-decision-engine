@@ -7,7 +7,9 @@
 from __future__ import annotations
 
 import datetime
+import hashlib
 import json
+import os
 import pathlib
 import platform
 import statistics
@@ -215,7 +217,13 @@ def write_result(name: str, payload, outdir=None, script: str | None = None) -> 
     payload.setdefault("openvino", ov.get_version())
     payload["generated_by"] = script or "src/bench/"
     payload["generated_at"] = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
-    payload["host"] = f"{platform.node()} / {platform.system()} {platform.release()} / py{platform.python_version()}"
+    # 溯源用「主机名哈希」而非明文主机名 —— 明文会把计算机名随结果文件公开出去
+    # （2026-11-14 开源审计的实际教训）。哈希保留跨文件/跨轮次的同机可辨识性，
+    # 但不泄露主机名本身；设 NPUDE_HOST_LABEL 可覆盖成任意自定义标签。
+    payload["host"] = (
+        os.environ.get("NPUDE_HOST_LABEL")
+        or f"host-{hashlib.sha256(platform.node().encode()).hexdigest()[:8]}"
+    ) + f" / {platform.system()} {platform.release()} / py{platform.python_version()}"
     path = outdir / name
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2, cls=_NumpyEncoder), encoding="utf-8")
     print(f"\nwrote {path}")
