@@ -13,7 +13,7 @@
     ckpt = paths.require(paths.JEV_CKPT)
 
 覆盖项目根：设置环境变量 ``NPUDE_ROOT``（CI 或迁移目录时用）。
-覆盖下载代理：设置 ``HF_PROXY``（留空则直连，不再硬编码本机 7897 端口）。
+覆盖下载代理：设置 ``HF_PROXY``（留空则直连，不再硬编码本机 127.0.0.1:<port> 端口）。
 """
 
 from __future__ import annotations

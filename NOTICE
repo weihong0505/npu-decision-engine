@@ -1,0 +1,49 @@
+npu-decision-engine
+Copyright 2026 weihong0505
+
+本仓库整体以 Apache License 2.0 释出（完整许可副本见根目录 `LICENSE`）。
+This repository is released under the Apache License, Version 2.0 (see `LICENSE`).
+
+---
+
+## 1. 本项目原创部分
+
+`src/`、`docs/`、`tests/`、`run.ps1`、`README.md`、`REVIEW.md`、`NOTICE`
+Copyright 2026 weihong0505
+Licensed under the Apache License, Version 2.0.
+
+## 2. 上游衍生部分（`engine/`）
+
+`engine/` 目录是下列公开仓库的衍生（浅克隆后重命名、改路径、补文档），
+其版权归上游作者所有，同样沿用 Apache License 2.0 —— 完整许可副本见 `engine/LICENSE`：
+
+| 项 | 值 |
+|---|---|
+| 上游仓库 | https://github.com/intikhab49/open-jev-typed-decision-engine |
+| commit | `5977431` |
+| 许可 | Apache-2.0 |
+| 本项目内的改动 | 重命名为 `engine/`；移除嵌套 `.git`（原 `.git` 归档于 `backup/20261015-113854/`）；补 README；其余逻辑未改 |
+
+上游内部的第三方引用（数据集、模型）见下文第 3 节。
+
+## 3. 第三方资产（不随本仓库分发）
+
+以下资产**不包含**在本仓库的 git 历史中（由 `.gitignore` 排除），
+需按 `docs/04-复现手册.md` 与 `src/fetch/` 脚本自行获取，各自许可以原始发布方为准：
+
+| 资产 | 来源 | 许可 |
+|---|---|---|
+| 数据集 typed-decisions | HF `LocalLLaMA/typed-decisions` | apache-2.0 |
+| 编码器骨干 ModernBERT-base | HF `answerdotai/ModernBERT-base`（含社区 INT4 导出 `onnx/model_q4.onnx`） | apache-2.0 |
+| Qwen2.5-1.5B INT4 OV 权重 | HF `OpenVINO/Qwen2.5-1.5B-Instruct-int4-ov` | apache-2.0 |
+| Qwen2.5-7B INT4 OV 权重 | HF `OpenVINO/Qwen2.5-7B-Instruct-int4-ov` | apache-2.0 |
+| 对照对象 TypeSafe Jev 1.13.0 | 商业模型，**仅引用其公开指标，无代码/权重依赖** | 未使用其任何资产 |
+
+本项目**不使用** `engine/legacy/*.py` 里的 Anthropic API 遗留路径；该路径仅随上游代码存在，
+若复用请自行审计其 key 取法。
+
+## 4. 数据与日志
+
+`output/results/` 与 `archive/` 中的结果文件是本项目 2026-09-22 与 2026-10-15 的实测产物，
+由本项目在自有硬件上产生。其中的本机用户名、主机名、内网代理地址已替换为占位符
+（`C:\Users\<user>`、`<host>`、`127.0.0.1:<port>` 为普遍默认值而非本机私密信息）。

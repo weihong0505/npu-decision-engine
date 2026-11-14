@@ -1,12 +1,13 @@
 # npu-decision-engine
 
 > **Intel NPU 到底能不能跑 LLM 推理？我用基准把答案量出来了。**
-> 一句话结论：**NPU 适合静态形状的编码器前向（比 CPU 快约 3×），不适合自回归解码（比 CPU 慢约 5.5×）。**
+> 一句话结论：**NPU 适合静态形状的编码器前向（比 CPU 快 1.5–1.8×），不适合自回归解码（比 CPU 慢 3.9–5.5×，随驱动/协议漂移）。**
 
 <p>
 <img alt="tests" src="https://img.shields.io/badge/tests-23%20passed-brightgreen">
 <img alt="openvino" src="https://img.shields.io/badge/OpenVINO-2026.4.0-blue">
 <img alt="hardware" src="https://img.shields.io/badge/NPU-Intel%C2%AE%20AI%20Boost-informational">
+<img alt="license" src="https://img.shields.io/badge/license-Apache--2.0-blue">
 </p>
 
 把 **JEV-lite**（ModernBERT-150M 的 typed decision engine，一次前向回答任意类型化问题）
@@ -22,12 +23,22 @@
 
 | 任务 | 设备 | 延迟 | 结论 |
 |---|---|---|---|
-| JEV-lite 编码器（静态 L=768） | **NPU** | **189 ms**（历史值，现不可复现） | 拆图后曾比纯 CPU 快 **3.0×** |
+| JEV-lite 编码器（静态 L=768） | **NPU** | **189 ms**（历史值，现不可复现） | 拆图后曾比纯 CPU 快 **3.0×**（分母是整图 CPU 568 ms；同形对照 420 ms → **2.2×**，见下方注） |
 | JEV-lite 整图（含 head） | **NPU** | **编译失败**（现为段错误） | 图里有 22 个 `IsNaN`，NPU 不支持 |
 | JEV-lite 整图 | CPU | 570.9 ms（2026-10 复测） | 唯一能跑通整图的设备 |
-| ModernBERT 编码器（静态 L=128） | **NPU** | **40.6 ms** | 比 CPU（61.8 ms）快 1.5× |
+| ModernBERT 编码器（静态 L=128） | **NPU** | **40.6 ms**（重跑值；原作 38.4 ms） | 比 CPU（61.8 ms；原作 60.7 ms）快 **1.5×** |
 | ModernBERT 编码器（动态形状） | **NPU** | **编译失败** | 静态形状是 NPU 可编译的**前提** |
 | Qwen2.5-1.5B 解码（max_new=24） | **NPU** | 3305 ms / **3.6 tok/s** | 比 CPU（19.7 tok/s）慢 **5.5×** |
+
+> **「3.0×」这个数字请先看清分母。** 它是拿**整图 CPU（568 ms）**当分母算的，而整图在 NPU 上根本跑不了；
+> 拆图方案的同形对照是 **CPU 编码器 420 ms**，加速比 **2.2×**。两者都「对」，但答的不是同一个问题 ——
+> 拿 568 当分母会把「head 也被跳过」算进加速里。加上 2026-10 CPU 侧还慢了 38%（→581 ms），
+> **对外只引用 2.2× 这个同形比值，或直接说「189 ms 是历史值、现在跑不出来」**。
+
+> **这张表是 2026-09-22 的原始测量。** 2026-10-15 用新补的基准脚本重跑后：
+> 结论线 1、2 **干净复现**（编码器比值曲线几乎重合、LLM 的 NPU 慢于 CPU 定性成立但倍数从 5.47× 漂到 3.88×）；
+> **结论线 3 的 NPU 半边现在跑不出来** —— 表现为进程级段错误，不是可捕获的编译异常。
+> 详见 [docs/02 第七节](docs/02-实验结论汇总.md) 与 [docs/03 第九节](docs/03-约束与踩坑.md)。
 
 ---
 
@@ -40,9 +51,9 @@
 | CPU | Intel Core Ultra 9 275HX | `CPU` |
 | iGPU | Intel(R) Graphics | `GPU.0` |
 | dGPU | NVIDIA GeForce RTX 5060 Laptop | `GPU.1` |
-| **NPU** | **Intel(R) AI Boost** | `NPU` |
+| **NPU** | **Intel(R) AI Boost**（驱动 `1003717`） | `NPU` |
 
-OpenVINO 2026.4.0 · Python 3.14.6 · torch 2.11.0+cu128
+OpenVINO 2026.4.0 · openvino-genai 2026.4.0.0 · Python 3.14.6 · torch 2.11.0+cu128 · Windows 11 (10.0.26200)
 
 ---
 
@@ -136,8 +147,16 @@ python engine/04_eval.py               # 官方测试集评估
 | `output/results/` | 📊 2026-09-22 实测产物（原样保留） |
 | `engine/` | ⬆️ **上游代码**（浅克隆，Apache-2.0），来源与 commit 见 [docs/UPSTREAM.md](docs/UPSTREAM.md) |
 
-本仓库整体沿用上游 **Apache-2.0**。`engine/` 内文件版权归上游作者，
-本项目新增部分在同样许可下提供。模型权重与数据集各自的许可以其原始发布方为准。
+本仓库整体以 **Apache-2.0** 释出：
+
+- 根目录 [`LICENSE`](LICENSE) 是 Apache-2.0 全文，[`NOTICE`](NOTICE) 写清三类归属。
+- `engine/` 内文件版权归上游作者，沿用其 Apache-2.0（副本见 [`engine/LICENSE`](engine/LICENSE)），
+  来源与 commit 见 [`docs/UPSTREAM.md`](docs/UPSTREAM.md)。
+- 本项目新增部分（`src/`、`docs/`、`tests/`、`run.ps1` 等）同为 Apache-2.0。
+- **第三方模型权重与数据集不随本仓库分发**（`.gitignore` 排除，可用 `src/fetch/` 重新获取），
+  各自的许可以原始发布方为准：`LocalLLaMA/typed-decisions`、`answerdotai/ModernBERT-base`、
+  `OpenVINO/Qwen2.5-*-int4-ov` 均为 apache-2.0。
+- 对照对象 TypeSafe Jev 是商业模型，本项目只引用其公开指标，**无代码/权重依赖**。
 
 ---
 
@@ -145,7 +164,7 @@ python engine/04_eval.py               # 官方测试集评估
 
 ```
 npu-decision-engine/
-├─ README.md  REVIEW.md  requirements.txt  .gitignore  pytest.ini  run.ps1
+├─ README.md  REVIEW.md  LICENSE  NOTICE  requirements.txt  .gitignore  pytest.ini  run.ps1
 ├─ src/
 │  ├─ paths.py            统一路径解析（禁止写死盘符）
 │  ├─ fetch/              数据与模型下载
@@ -158,7 +177,7 @@ npu-decision-engine/
 │  └─ tools/              日志规范化等工程工具
 ├─ engine/                JEV-lite 训练与评估流水线（01→07，上游代码，见 docs/UPSTREAM.md）
 ├─ tests/                 路径回归、基准设施、head 数值等价、工程卫生（23 项，无需 NPU）
-├─ docs/                  背景 / 结论汇总 / 约束与踩坑 / 复现手册 / 上游来源
+├─ docs/                  一页导读 / 背景 / 结论汇总 / 约束与踩坑 / 复现手册 / 上游来源
 ├─ output/
 │  ├─ results/            19 个原始结果 + rerun/ 重跑结果
 │  └─ onnx/               ONNX 图、侧车权重、jevlite.pt
@@ -166,6 +185,9 @@ npu-decision-engine/
 ├─ archive/               被取代的脚本与结果（保留留痕）
 └─ backup/                整理前的完整快照
 ```
+
+> **第一次来建议先读 [`docs/05-项目概览.md`](docs/05-项目概览.md)** —— 一页导读，把三条结论线的可信度、
+> 三个历史包袱（189 ms 不可复现 / ONNX 与检查点不同源 / TURBO 是伪影）、硬约束和下一步都排好了优先级。
 
 ---
 

@@ -22,7 +22,7 @@ data/typed-decisions/
 
 ```powershell
 python src/fetch/dl-data.py            # 直连
-$env:HF_PROXY = "http://127.0.0.1:<port>"; python src/fetch/dl-data.py   # 走代理
+$env:HF_PROXY = "http://127.0.0.1:<port>"; python src/fetch/dl-data.py   # 走代理（端口仅为示例，按自己的代理软件填）
 ```
 
 脚本是幂等的：已存在且非空的文件会跳过。
