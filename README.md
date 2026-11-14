@@ -92,6 +92,7 @@ ModernBERT-base（HF 官方 INT4 导出，`model_q4.onnx`）：
 整图丢 NPU   → 编译失败（22 个 IsNaN）        → 只能 CPU 568 ms
 补掉 IsNaN   → 能编译，但 1625 ms + 精度崩(0.81) → 无意义
 拆成两半     → NPU 编码器 189 ms + CPU head 0.2 ms = 189 ms  ← ✅ 成立
+注：3.0× 是拿「整图 CPU 568 ms」当分母；同形对照（CPU 编码器 420 ms）是 2.2×。别把 3.0× 当同形加速比。
 ```
 
 拆图依据（`engine/model.py:54-59`）：head 只是 `Linear(768,1)` 作用在
@@ -181,7 +182,8 @@ npu-decision-engine/
 │  └─ tools/              日志规范化等工程工具
 ├─ engine/                JEV-lite 训练与评估流水线（01→07，上游代码，见 docs/UPSTREAM.md）
 ├─ tests/                 路径回归、基准设施、head 数值等价、工程卫生（23 项，无需 NPU）
-├─ docs/                  一页导读 / 背景 / 结论汇总 / 约束与踩坑 / 复现手册 / 上游来源
+├─ docs/                  背景 / 结论汇总 / 约束与踩坑 / 复现手册 / 上游来源
+│  └─ 05-项目概览.md      一页导读（第一次来先读这篇）
 ├─ output/
 │  ├─ results/            19 个原始结果 + rerun/ 重跑结果
 │  └─ onnx/               ONNX 图、侧车权重、jevlite.pt
